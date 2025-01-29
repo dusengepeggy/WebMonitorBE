@@ -26,10 +26,10 @@ class WebsiteService {
     return result[0];
   }
 
-  static async updateWebsite(websiteId: string, url: string, status: string) {
+  static async updateWebsite(websiteId: string,name:string|null, url: string, status: string) {
     const result = await sql`
       UPDATE websites
-      SET url = ${url}, status = ${status}, updated_at = NOW()
+      SET url = ${url}, status = ${status},name =${name} ,updated_at = NOW()
       WHERE id = ${websiteId}
       RETURNING id, name, url, status, updated_at;
     `;

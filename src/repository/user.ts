@@ -2,19 +2,25 @@ import sql from '../db';
 
 class UserService {
 
-  static async createUser(email: string, password: string, username: string, profile?: string) {
+  static async createUser(email: string, password: string, username: string) {
     const result = await sql`
-      INSERT INTO users (email, password, username, profile)
-      VALUES (${email}, ${password}, ${username}, ${profile ?? null})
+      INSERT INTO users (email, password, username)
+      VALUES (${email}, ${password}, ${username})
       RETURNING id, email, username, created_at, updated_at;
     `;
     return result[0];
   }
 
-
+   
   static async getUserById(userId: string) {
     const result = await sql`
       SELECT * FROM users WHERE id = ${userId};
+    `;
+    return result[0];
+  }
+  static async getUserBEmail(userEmail: string) {
+    const result = await sql`
+      SELECT * FROM users WHERE email = ${userEmail};
     `;
     return result[0];
   }
