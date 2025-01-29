@@ -1,41 +1,36 @@
 import sql from '../db';
 
-class NotificationService {
+class MonitoringLogService {
 
-  static async createNotification(userId: string, websiteId: string, type: string, message: string) {
+  static async createMonitoringLog(websiteId: string, status: string) {
     const result = await sql`
-      INSERT INTO notifications (user_id, website_id, type, message)
-      VALUES (${userId}, ${websiteId}, ${type}, ${message})
-      RETURNING id, type, message, created_at;
+      INSERT INTO monitoring_logs (website_id, status)
+      VALUES (${websiteId}, ${status})
+      RETURNING id, status, checked_at;
     `;
     return result[0];
   }
 
-
-  static async getNotificationsByUserId(userId: string) {
+  static async getMonitoringLogsByWebsiteId(websiteId: string) {
     const result = await sql`
-      SELECT * FROM notifications WHERE user_id = ${userId};
+      SELECT * FROM monitoring_logs WHERE website_id = ${websiteId} ORDER BY checked_at DESC;
     `;
     return result;
   }
 
-
-  static async markNotificationAsRead(notificationId: string) {
+  static async getLatestMonitoringLogByWebsiteId(websiteId: string) {
     const result = await sql`
-      UPDATE notifications
-      SET is_read = TRUE, updated_at = NOW()
-      WHERE id = ${notificationId}
-      RETURNING id, is_read, updated_at;
+      SELECT * FROM monitoring_logs WHERE website_id = ${websiteId} ORDER BY checked_at DESC LIMIT 1;
     `;
     return result[0];
   }
 
-  static async deleteNotification(notificationId: string) {
+  static async deleteMonitoringLog(logId: string) {
     const result = await sql`
-      DELETE FROM notifications WHERE id = ${notificationId};
+      DELETE FROM monitoring_logs WHERE id = ${logId};
     `;
     return result;
   }
 }
 
-export default NotificationService;
+export default MonitoringLogService;

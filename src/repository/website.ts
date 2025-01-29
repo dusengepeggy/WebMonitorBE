@@ -18,10 +18,16 @@ class WebsiteService {
     `;
     return result;
   }
-
+ 
   static async getWebsiteById(websiteId: string) {
     const result = await sql`
       SELECT * FROM websites WHERE id = ${websiteId};
+    `;
+    return result[0];
+  }
+  static async getWebsiteByIdandName(userId: string,url:string) {
+    const result = await sql`
+      SELECT * FROM websites WHERE user_id = ${userId} AND url = ${url};
     `;
     return result[0];
   }
@@ -35,6 +41,22 @@ class WebsiteService {
     `;
     return result[0];
   }
+
+  static async getAllWebsite(){
+    const result = await sql`SELECT * FROM websites`
+    return result
+  }
+
+  static async updateWebsiteStatus(websiteId: string, status: string, lastChecked: string) {
+    const result = await sql`
+        UPDATE websites
+        SET status = ${status}, last_checked = ${lastChecked}
+        WHERE id = ${websiteId}
+        RETURNING id, status, last_checked;
+    `;
+    return result[0];
+}
+
 
 
   static async deleteWebsite(websiteId: string) {

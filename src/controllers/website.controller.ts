@@ -5,11 +5,21 @@ import MonitoredWebsiteService from "../repository/website";
 export const createService = async (req: Request, res: Response) => {
     try {
         const { userId, name, url }: { userId: string; name: string; url: string } = req.body;
-        const newService = await MonitoredWebsiteService.createWebsite(userId, name, url);
-        return res.status(201).json({
-            message: "Service created successfully",
-            service: newService,
-        });
+        const alreadyExist = await MonitoredWebsiteService.getWebsiteByIdandName(userId,url)
+        if (alreadyExist) {
+            return res.status(401).json({
+                message:"Website already exists",
+            })
+        }
+        else{
+            const newService = await MonitoredWebsiteService.createWebsite(userId, name, url);
+            return res.status(201).json({
+                message: "Service created successfully",
+                service: newService,
+            });
+
+        }
+
     } catch (error: any) {
         return res.status(500).json({ message: error.message });
     }
@@ -57,6 +67,7 @@ export const updateService = async (req: Request, res: Response) => {
         return res.status(500).json({ message: error.message });
     }
 };
+
 
 
 export const deleteService = async (req: Request, res: Response) => {
